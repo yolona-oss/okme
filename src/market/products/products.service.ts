@@ -15,6 +15,7 @@ import { FilteringOptions } from './interfaces/filtering-options.interface';
 import { FiltredProducts } from './interfaces/filtred-products.interface';
 
 import { DeepPartial } from './../../common/types/deep-partial.type';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProductsService {
@@ -22,6 +23,7 @@ export class ProductsService {
         @InjectModel('Product')
         private readonly model: Model<ProductDocument>,
         private readonly imagesService: ImageUploadService,
+        private readonly configService: ConfigService
     ) { }
 
     async findAll() {
@@ -98,7 +100,7 @@ export class ProductsService {
                     url: newProduct.imageURL,
                     alt: newProduct.imageAlt
                 },
-                presentageURL: newProduct.presentageURL
+                presentageURL: this.configService.get<string>('productsDir') + newProduct.presentageURL
             })
         } catch (error) {
             if (error instanceof mongoose.Error.ValidationError) {

@@ -13,7 +13,8 @@ export interface ConfigSchema {
     database: {
         connection_string: string,
         name: string;
-    }
+    },
+    productsDir: string
 }
 
 export default (): ConfigSchema => ({
@@ -22,4 +23,5 @@ export default (): ConfigSchema => ({
         connection_string: <string>process.env.DATABASE_CONNECTION_STRING,
         name: <string>process.env.DATABASE_NAME,
     },
+    productsDir: <string>process.env.PRODUCTS_DIR
 })

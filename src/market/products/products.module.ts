@@ -5,6 +5,7 @@ import { ImageUploadModule } from './../../image-upload/image-upload.module';
 import { ProductsController } from './products.controller';
 import { ProductSchema } from './schemas/products.schema';
 import { ProductsService } from './products.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { ProductsService } from './products.service';
             }
         ]),
         ImageUploadModule,
+        ConfigModule,
     ],
     providers: [ProductsService],
     controllers: [ProductsController],
