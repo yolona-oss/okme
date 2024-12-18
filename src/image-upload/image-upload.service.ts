@@ -18,11 +18,22 @@ export class ImageUploadService extends CRUDService<ImagesDocument> {
         super(imagesModel)
     }
 
-    /***
-     * Upload images to cloudinary and save them to db
-     */
-    async uploadImages(files: {path: string, filename: string}[]) {
-        files
+    async uploadImages(files: {path: string, filename: string}[], alt: string = 'image') {
+        const createImageUrl = (file: {filename: string}) => 'http://localhost:4000/images/' + file.filename
+
+        const docs: ImagesDocument[] = []
+        for (const file of files) {
+            const doc = await this.imagesModel.create(
+                {
+                    url: createImageUrl(file),
+                    alt: alt
+                }
+            )
+
+            docs.push(doc)
+        }
+
+        return docs
     }
 
     override async removeDocumentById(id: string) {
@@ -40,7 +51,7 @@ export class ImageUploadService extends CRUDService<ImagesDocument> {
         }
 
         for (const doc of docs) {
-            if (doc.imageUrl == url) {
+            if (doc.url == url) {
                 return doc
             }
         }

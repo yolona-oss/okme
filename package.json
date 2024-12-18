@@ -1,8 +1,8 @@
 {
   "packageManager": "npm@10.8.2",
-  "name": "spice-server",
+  "name": "oakame-backend",
   "version": "1.0.0",
-  "description": "Nestjs backend for kislovodsk spice princess",
+  "description": "",
   "author": "yolona-oss",
   "private": true,
   "license": "UNLICENSED",
@@ -13,13 +13,7 @@
     "start": "nest start",
     "start:dev": "cross-env NODE_ENV=dev nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "start:prod": "node dist/main"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

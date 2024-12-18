@@ -91,15 +91,7 @@ export class ProductsService {
     async create(newProduct: CreateProductDto) {
         try {
             return await this.model.create({
-                title: newProduct.title,
-                description: newProduct.description,
-                price: newProduct.price,
-                category: newProduct.category,
-                rating: newProduct.rating,
-                image: {
-                    url: newProduct.imageURL,
-                    alt: newProduct.imageAlt
-                },
+                ...newProduct,
                 presentageURL: this.configService.get<string>('productsDir') + newProduct.presentageURL
             })
         } catch (error) {

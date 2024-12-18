@@ -1,12 +1,46 @@
 //import mongoose from "mongoose"
 
 export interface CreateProductDto {
-    readonly title: string
-    readonly description: string
-    readonly price: number
-    readonly category: string
-    readonly rating?: number
-    readonly imageURL: string
-    readonly imageAlt: string
-    readonly presentageURL: string
+    title: string; // Required
+    extendedTitle: string; // Required
+    description: string; // Required
+
+    image: {
+        url: string;
+        alt: string;
+    };
+
+    sliderImages: {
+        url: string;
+        alt: string;
+    }[];
+
+    dimensions: {
+        width: number;
+        height: number;
+        depth: number;
+    };
+
+    details: {
+        title: string;
+        description: string;
+    }[];
+
+    caring?: {
+        title: string;
+        description: string;
+    }[];
+
+    materials: {
+        title: string;
+        options: {
+            description: string;
+            backgroundImageURL?: string;
+        }[]
+    }[];
+
+    price?: number; // Optional, default: 0
+    category: string; // Required
+    rating?: number; // Optional, default: 5
+    presentageURL: string; // Required
 }

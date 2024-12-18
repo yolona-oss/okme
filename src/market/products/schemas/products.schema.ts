@@ -9,8 +9,6 @@ export type ProductDocument = ProductEntity & Document;
     },
 })
 export class ProductEntity {
-    //id?: string;
-
     @Prop({type: String, required: true})
     title: string;
 
@@ -48,12 +46,14 @@ export class ProductEntity {
         description: string
     }[]
 
-    @Prop({type: [{title: String, description: String}], required: true})
+    @Prop({type: [{title: String, options: [{description: String, backgroundImageURL: String}]}], required: true})
     materials: {
         title: string
-        description: string
-        backgroundImageURL?: string
-    }[][]
+        options: {
+            description: string
+            backgroundImageURL?: string
+        }[]
+    }[]
 
     @Prop({type: Number, default: 0})
     price?: number;

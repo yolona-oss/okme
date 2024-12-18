@@ -8,6 +8,7 @@ import {
     Post,
     Delete,
     Controller,
+    Body,
 } from '@nestjs/common';
 import { Response, Request } from 'express'
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -33,6 +34,7 @@ export class ImageUploadController {
     }))
     async upload(
         @UploadedFiles() files: Array<Express.Multer.File>,
+        @Body() body: any,
         @Res() res: Response
     ) {
         try {
@@ -43,11 +45,9 @@ export class ImageUploadController {
                 })
             }
 
-            res.status(200).json({
-                uploaded: [
-                    ...(files.map(file => 'http://localhost:4000/images/' + file.filename))
-                ]
-            })
+            const uploaded = await this.imageUploadService.uploadImages(files, body.alt)
+
+            res.status(200).json(uploaded)
         } catch (e) {
             console.error(e)
             throw new AppError(AppErrorTypeEnum.BAD_REQUEST)
