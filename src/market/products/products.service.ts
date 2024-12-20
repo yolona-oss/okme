@@ -13,9 +13,14 @@ import { ProductEntity } from './schemas/products.schema';
 import { OPQBuilder } from './../../common/misc/opq-builder';
 import { FilteringOptions } from './interfaces/filtering-options.interface';
 import { FiltredProducts } from './interfaces/filtred-products.interface';
+import { PagesOutput } from './interfaces/pages-output.interface';
 
 import { DeepPartial } from './../../common/types/deep-partial.type';
 import { ConfigService } from '@nestjs/config';
+import { PageCompilerService } from '../../common/page-compiler/page-compiler.service';
+
+import * as path from 'path'
+import * as fs from 'fs'
 
 @Injectable()
 export class ProductsService {
@@ -23,7 +28,8 @@ export class ProductsService {
         @InjectModel('Product')
         private readonly model: Model<ProductDocument>,
         private readonly imagesService: ImageUploadService,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        private readonly pageCompilerService: PageCompilerService
     ) { }
 
     async findAll() {
@@ -84,6 +90,22 @@ export class ProductsService {
         }
     }
 
+    async getAllByPages(query: {perPage: string}) {
+        const productsCount = await this.productsCount()
+        const pages = Math.ceil(productsCount / parseInt(query.perPage))
+
+        const ret: PagesOutput = {
+            pages: [],
+            totalPages: pages
+        }
+        for (let i = 1; i <= pages; i++) {
+            const execRes = await this.findFiltred({page: String(i), perPage: query.perPage})
+            ret.pages.push({page: i, products: execRes.products})
+        }
+
+        return ret
+    }
+
     async productsCount() {
         return await this.model.countDocuments()
     }
@@ -91,8 +113,7 @@ export class ProductsService {
     async create(newProduct: CreateProductDto) {
         try {
             return await this.model.create({
-                ...newProduct,
-                presentageURL: this.configService.get<string>('productsDir') + newProduct.presentageURL
+                ...newProduct
             })
         } catch (error) {
             if (error instanceof mongoose.Error.ValidationError) {
@@ -134,5 +155,20 @@ export class ProductsService {
             throw new AppError(AppErrorTypeEnum.DB_ENTITY_NOT_FOUND)
         }
         return doc
+    }
+
+    async compileProductHTML(id: string) {
+        const data = await this.findById(id).then(p => {
+            return {
+                data: p.toJSON()
+            }
+        })
+
+        const dir: string = this.configService.getOrThrow<string>('EJSTemplate_dir')
+        const pageTemplateFilename: string = this.configService.getOrThrow<string>('EJSTemplates.productPage')
+
+        const file = path.join(dir, pageTemplateFilename)
+        const res = await this.pageCompilerService.compile(file, data)
+        fs.writeFileSync("./asdf.html", res)
     }
 }

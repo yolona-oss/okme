@@ -16,6 +16,8 @@ import { ProductsService } from './products.service';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductEntity } from './schemas/products.schema';
+import { FiltredProducts } from './interfaces/filtred-products.interface';
+import { PagesOutput } from './interfaces/pages-output.interface';
 
 @Controller()
 export class ProductsController {
@@ -23,10 +25,22 @@ export class ProductsController {
         private readonly productsService: ProductsService,
     ) {}
 
+    @Get('/compile-page/:id')
+    async compilePage(@Param('id', ParseObjectIdPipe) id: string, @Res() response: Response) {
+        const execRes = await this.productsService.compileProductHTML(id)
+        return response.status(200).json(execRes)
+    }
+
     @Get('/')
     async findSome(@Query() query: any, @Res() response: Response) {
         const execRes = await this.productsService.findFiltred(query)
         return response.status(200).json(execRes)
+    }
+
+    @Get('/get-all-by-pages')
+    async getAllByPages(@Query() query: {perPage: string}, @Res() response: Response) {
+        const ret = await this.productsService.getAllByPages(query)
+        return response.status(200).json(ret)
     }
 
     @Get('/count')

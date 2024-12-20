@@ -55,6 +55,12 @@ export class ProductEntity {
         }[]
     }[]
 
+    @Prop({type: {indoor: Boolean, outdoor: Boolean}, required: true})
+    availability: {
+        indoor: boolean
+        outdoor: boolean
+    }
+
     @Prop({type: Number, default: 0})
     price?: number;
 
@@ -63,9 +69,6 @@ export class ProductEntity {
 
     @Prop({type: Number, default: 5})
     rating?: number;
-
-    @Prop({type: String, required: true})
-    presentageURL: string;
 }
 
 const ProductSchema = SchemaFactory.createForClass(ProductEntity);

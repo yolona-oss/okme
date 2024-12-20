@@ -6,6 +6,7 @@ import { ProductsController } from './products.controller';
 import { ProductSchema } from './schemas/products.schema';
 import { ProductsService } from './products.service';
 import { ConfigModule } from '@nestjs/config';
+import { PageCompilerModule } from '../../common/page-compiler/page-compiler.module';
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
         ]),
         ImageUploadModule,
         ConfigModule,
+        PageCompilerModule,
     ],
     providers: [ProductsService],
     controllers: [ProductsController],

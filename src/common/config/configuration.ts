@@ -14,7 +14,11 @@ export interface ConfigSchema {
         connection_string: string,
         name: string;
     },
-    productsDir: string
+    productsDir: string,
+    EJSTemplate_dir: string,
+    EJSTemplates: {
+        productPage: string,
+    }
 }
 
 export default (): ConfigSchema => ({
@@ -23,5 +27,9 @@ export default (): ConfigSchema => ({
         connection_string: <string>process.env.DATABASE_CONNECTION_STRING,
         name: <string>process.env.DATABASE_NAME,
     },
-    productsDir: <string>process.env.PRODUCTS_DIR
+    productsDir: <string>process.env.PRODUCTS_DIR,
+    EJSTemplate_dir: <string>process.env.EJS_TEMPLATE_DIR,
+    EJSTemplates: {
+        productPage: <string>process.env.EJS_PRODUCT_PAGE_TEMPLATE
+    }
 })
