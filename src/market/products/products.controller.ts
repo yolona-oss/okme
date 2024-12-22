@@ -19,17 +19,60 @@ import { ProductEntity } from './schemas/products.schema';
 import { FiltredProducts } from './interfaces/filtred-products.interface';
 import { PagesOutput } from './interfaces/pages-output.interface';
 
+import { ImageUploadService } from 'image-upload/image-upload.service';
+
 @Controller()
 export class ProductsController {
     constructor(
         private readonly productsService: ProductsService,
+        private readonly imageuploadService: ImageUploadService
     ) {}
 
-    @Get('/compile-page/:id')
-    async compilePage(@Param('id', ParseObjectIdPipe) id: string, @Res() response: Response) {
-        const execRes = await this.productsService.compileProductHTML(id)
-        return response.status(200).json(execRes)
+    @Get("/tmp2")
+    async compileAllProducts() {
+        const products = await this.productsService.findAll()
+        console.log(products.length)
+        for (const product of products) {
+            let edited = {
+                ...product.toJSON(),
+                image: {
+                    ...product.image,
+                    url: "http://localhost:4000/" + product.image.url
+                },
+                sliderImages: product.sliderImages.map((i) => {
+                    return {
+                        ...i,
+                        url: "http://localhost:4000/" + i.url
+                    }
+                }),
+                materials: product.materials.map((m) => {
+                    return {
+                        ...m,
+                        options: m.options.map((o) => {
+                            return {
+                                ...o,
+                                backgroundImageURL: o.backgroundImageURL ? "http://localhost:4000/" + o.backgroundImageURL : null
+                            }
+                        })
+                    }
+                })
+            }
+
+            //const data = await this.findById(id).then(p => {
+            //    return {
+            //        data: p.toJSON()
+            //    }
+            //})
+            // @ts-ignore
+            await this.productsService.compileProductHTML(edited)
+        }
     }
+
+    //@Get('/compile-product/:id')
+    //async compilePage(@Param('id', ParseObjectIdPipe) id: string, @Res() response: Response) {
+    //    const execRes = await this.productsService.compileProductHTML(id)
+    //    return response.status(200).json(execRes)
+    //}
 
     @Get('/')
     async findSome(@Query() query: any, @Res() response: Response) {
@@ -55,7 +98,7 @@ export class ProductsController {
         response.status(200).json(execRes)
     }
 
-    @Get('/:id')
+    @Get('/by-id/:id')
     async productById(@Param('id', ParseObjectIdPipe) id: string, @Res() response: Response) {
         const doc = await this.productsService.findById(id)
         response.status(200).send(doc)
@@ -75,5 +118,11 @@ export class ProductsController {
     ) {
         const execRes = await this.productsService.update(id, newData)
         response.status(200).json(execRes)
+    }
+
+    @Get('/categories')
+    async getCategories(@Res() response: Response) {
+        const categories = await this.productsService.getCategories()
+        response.status(200).json(categories)
     }
 }

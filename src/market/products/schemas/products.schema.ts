@@ -19,7 +19,10 @@ export class ProductEntity {
     description: string;
 
     @Prop({type: {url: String, alt: String}, required: true})
-    image: string;
+    image: {
+        url: string,
+        alt: string
+    }
 
     @Prop({type: [{ url: String, alt: String }], required: true })
     sliderImages: {

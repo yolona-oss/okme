@@ -18,7 +18,8 @@ export interface ConfigSchema {
     EJSTemplate_dir: string,
     EJSTemplates: {
         productPage: string,
-    }
+    },
+    AI_API_KEY: string
 }
 
 export default (): ConfigSchema => ({
@@ -31,5 +32,6 @@ export default (): ConfigSchema => ({
     EJSTemplate_dir: <string>process.env.EJS_TEMPLATE_DIR,
     EJSTemplates: {
         productPage: <string>process.env.EJS_PRODUCT_PAGE_TEMPLATE
-    }
+    },
+    AI_API_KEY: <string>process.env.AI_API_KEY
 })

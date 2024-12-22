@@ -19,7 +19,7 @@ export class ImageUploadService extends CRUDService<ImagesDocument> {
     }
 
     async uploadImages(files: {path: string, filename: string}[], alt: string = 'image') {
-        const createImageUrl = (file: {filename: string}) => 'http://localhost:4000/images/' + file.filename
+        const createImageUrl = (file: {filename: string}) => 'images/' + file.filename
 
         const docs: ImagesDocument[] = []
         for (const file of files) {

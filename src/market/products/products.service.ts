@@ -79,10 +79,6 @@ export class ProductsService {
         const docs = await this.model.find(query, null, { skip: (page - 1) * (perPage || 0), limit: perPage })
             .exec()
 
-        for (const doc of docs) {
-            console.log(doc)
-        }
-
         return {
             products: docs,
             totalPages: totalPages,
@@ -157,18 +153,35 @@ export class ProductsService {
         return doc
     }
 
-    async compileProductHTML(id: string) {
-        const data = await this.findById(id).then(p => {
-            return {
-                data: p.toJSON()
-            }
-        })
+    async getCategories() {
+        const docs = await this.findAll()
+
+        return docs.map(doc => doc.category)
+    }
+
+    async compileProductHTML(product: ProductDocument) {
+        const data = {
+            data: product
+        }
 
         const dir: string = this.configService.getOrThrow<string>('EJSTemplate_dir')
         const pageTemplateFilename: string = this.configService.getOrThrow<string>('EJSTemplates.productPage')
 
         const file = path.join(dir, pageTemplateFilename)
         const res = await this.pageCompilerService.compile(file, data)
-        fs.writeFileSync("./asdf.html", res)
+        return res
+    }
+
+    async saveProductHTMLtoFile(html: string, opts: { path?: string, filename?: string }) {
+        if (opts.path) {
+            if (!fs.existsSync(opts.path)) {
+                fs.mkdirSync(opts.path, { recursive: true })
+            }
+        }
+        fs.writeFileSync("./indoor/items/" + opts.filename ?? "product-" + Date.now()  + ".html", html)
+    }
+
+    async leber_mebelScraper(data: {path: string}[]) {
+        data[0].path
     }
 }

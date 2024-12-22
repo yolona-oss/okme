@@ -15,6 +15,11 @@ export interface CreateProductDto {
         alt: string;
     }[];
 
+    availability: {
+        indoor: boolean
+        outdoor: boolean
+    };
+
     dimensions: {
         width: number;
         height: number;
@@ -42,5 +47,4 @@ export interface CreateProductDto {
     price?: number; // Optional, default: 0
     category: string; // Required
     rating?: number; // Optional, default: 5
-    presentageURL: string; // Required
 }

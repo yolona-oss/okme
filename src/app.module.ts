@@ -12,12 +12,14 @@ import { CommonModule } from './common/common.module';
 import { ConfigModule } from '@nestjs/config';
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { LeberMebelScrapperModule } from 'site-scraper/site-scrapper.module';
 
 @Module({
     imports: [
         CommonModule,
         MarketModule,
         ImageUploadModule,
+        LeberMebelScrapperModule,
 
         ConfigModule.forRoot({
             load: [AppConfig],

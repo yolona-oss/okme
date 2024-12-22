@@ -26,7 +26,7 @@ async function bootstrap() {
     app.use(compression())
     app.setGlobalPrefix('api')
     app.useGlobalFilters(new AllExeptionFilter())
-    app.enableCors({origin: "*", credentials: true, allowedHeaders: ["Content-Type", "Authorization"]})
+    app.enableCors({origin: "http://127.0.0.1:40761", credentials: true, allowedHeaders: ["Content-Type", "Authorization"]})
     //app.enableCors(corsOptions)
 
     await app.listen(port,
