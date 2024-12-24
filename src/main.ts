@@ -26,13 +26,17 @@ async function bootstrap() {
     app.use(compression())
     app.setGlobalPrefix('api')
     app.useGlobalFilters(new AllExeptionFilter())
-    app.enableCors({origin: "http://127.0.0.1:40761", credentials: true, allowedHeaders: ["Content-Type", "Authorization"]})
+    app.enableCors({
+        origin: 'http://127.0.0.1:44535',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true,
+    })
     //app.enableCors(corsOptions)
 
     await app.listen(port,
-                     () => {
-                         console.log(`Server is running http://localhost:${port}`)
-                     });
+        () => {
+            console.log(`Server is running http://localhost:${port}`)
+        });
 }
 
 bootstrap();

@@ -28,7 +28,7 @@ export class ProductsController {
         private readonly imageuploadService: ImageUploadService
     ) {}
 
-    @Get("/tmp2")
+    @Get("/compile-all")
     async compileAllProducts() {
         const products = await this.productsService.findAll()
         console.log(products.length)
@@ -64,7 +64,8 @@ export class ProductsController {
             //    }
             //})
             // @ts-ignore
-            await this.productsService.compileProductHTML(edited)
+            const html = await this.productsService.compileProductHTML(edited)
+            await this.productsService.saveProductHTMLtoFile(html, { filename: product.id })
         }
     }
 

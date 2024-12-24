@@ -6,6 +6,8 @@ import { SiteScrapper } from '../common/misc/site-scrapper';
 import { JSDOM } from 'jsdom'
 import { randomInt } from 'crypto';
 
+import * as fs from 'fs'
+import { exec } from 'child_process';
 import { retrier } from '../common/misc/utils';
 import { AIService } from '../common/AI/ai.service';
 import { InputData } from './interfaces/input-data.interface';
@@ -36,14 +38,16 @@ export class LeberMebelScraperService extends SiteScrapper {
         for (const imgUrl of images) {
             const name = this.transformStringToFilename(baseName, `_${i}_${randomInt(1, 999)}.jpg`)
             await this.downloadImage(imgUrl, `${path}/${name}`)
-            //await new Promise((resolve, reject) =>
-            //    exec(`convert ${dir}/${name} -resize 1700x740^ -gravity center -extent 1700x740 -background black -compose copy -flatten ${dir}/${name.replace('.jpg', '_resized.jpg')}`, (e, o, se) => {
-            //        if (e || se) {
-            //            reject(e)
-            //        }
-            //        resolve(o)
-            //    })
-            //)
+            await new Promise((resolve, reject) =>
+                exec(`convert ${path}/${name} -resize 1700x740^ -gravity center -extent 1700x740 -background black -compose copy -flatten ${path}/${name.replace('.jpg', '_resized.jpg')}`, (e, o, se) => {
+                    if (e || se) {
+                        reject(e)
+                    }
+                    resolve(o)
+                })
+            )
+            fs.renameSync(`${path}/${name.replace('.jpg', '_resized.jpg')}`, `${path}/${name}`)
+
             uploaded.push(
                 (await this.imageService.uploadImages([
                     {
@@ -160,7 +164,7 @@ export class LeberMebelScraperService extends SiteScrapper {
         }
 
         const cat_match = spec.match(/Тип изделия:\s([^<]+)<br>/);
-        const categories = cat_match ? cat_match[1].split(' / ') : [product.title];
+        const categories = cat_match ? cat_match[1].split(' / ') : null;
 
         return {
             dimensions,
@@ -201,8 +205,27 @@ export class LeberMebelScraperService extends SiteScrapper {
             }
         }
 
-        const parseCategory = (scrapedCategories: string[]) => {
-            return scrapedCategories[0]
+        const parseCategory = async (scrapedCategories: string[]|null) => {
+            if (!scrapedCategories) {
+                throw new Error("No categories found")
+            }
+
+            const category = await this.aiService.ask(`Answer only in russian and without any addition text. select one category from this list: "Столы
+Металлические опоры для столов
+Стеллажи
+Шкафы и тумбы
+Полки настенные
+Бенч-системы
+Офисные кресла
+Журнальные столики
+Светильники
+Аксессуары
+Аксессуары для ванной комнаты
+Лавочки
+Офисная мебель
+Мебель для дома
+Мебель для руководителя" base your selection on this list of input values: "${scrapedCategories.join(", ")}"`)
+            return category
         }
 
         const created = await this.productsService.create({
@@ -237,7 +260,7 @@ export class LeberMebelScraperService extends SiteScrapper {
             materials: materials,
 
             price: parseInt(product.price ?? "0"),
-            category: parseCategory(htmlScrap.categories)
+            category: await parseCategory(htmlScrap.categories)
         })
 
         return created
@@ -257,6 +280,7 @@ export class LeberMebelScraperService extends SiteScrapper {
                     await this.handleSignleEntry(product)
                 )
             } catch(e) {
+                console.error("ERR:", e)
                 failed.push({
                     entry: product,
                     error: e

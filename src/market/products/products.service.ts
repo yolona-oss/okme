@@ -156,7 +156,7 @@ export class ProductsService {
     async getCategories() {
         const docs = await this.findAll()
 
-        return docs.map(doc => doc.category)
+        return docs.map(doc => doc.category).filter((v, i, a) => a.indexOf(v) === i)
     }
 
     async compileProductHTML(product: ProductDocument) {
@@ -178,10 +178,7 @@ export class ProductsService {
                 fs.mkdirSync(opts.path, { recursive: true })
             }
         }
-        fs.writeFileSync("./indoor/items/" + opts.filename ?? "product-" + Date.now()  + ".html", html)
-    }
-
-    async leber_mebelScraper(data: {path: string}[]) {
-        data[0].path
+        fs.writeFileSync("./wrap/indoor/items/" + opts.filename ?? "product-" + Date.now()  + ".html", html)
+        //fs.writeFileSync("./wrap/indoor/items/" + opts.filename + ".html", html)
     }
 }
